@@ -1,0 +1,188 @@
+span {
+  color: #69EB7C;
+}
+
+.userlist-item{
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.userlist-item .fa-spotify{
+  margin-right: 0.3em;
+}
+
+div .userlist-item:hover{
+  background-color:#26262c;
+  border-radius: 15px;
+}
+
+.userlist-item span{
+  color: #BBBCBB;
+}
+
+.usertype{
+  font-size:1rem;
+}
+
+.userlist-details {
+  display: inline;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.userlist-details h1{
+  color: #BBBCBB;
+}
+
+.connections{
+  position: flex;
+  text-align: center;
+}
+
+#connections{
+  padding: 0.5rem;
+  font-size:5rem;
+}
+
+a #connections{
+  vertical-align: middle;
+}
+
+#connections:hover{
+  background-color:#26262c;
+  border-radius: 10px;
+}
+
+.play{
+  pointer-events: none;
+}
+
+.spotify-player-container{
+  background-color: #26262c;
+  border-radius: 10px;
+  grid-template-rows: 1fr 1fr;
+}
+
+.spotify-player-container #connections:hover{
+  background-color: #13131b;
+}
+
+.spotify-player{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.playback{
+  display: flex;
+  flex-direction: row;
+  font-size: 1.5rem;
+}
+
+.song{
+  padding: 12px 12px
+}
+
+.artist{
+  font-size: 1em;
+  color: #ababab;
+  text-align: left;
+}
+
+.songName{
+  text-align: left;
+  padding-top: 12px;
+  font-size: 0.75em;
+}
+
+.playbackimg{
+  position: inherit;
+  padding: 12px 12px;
+  width: 6em;
+  height: 6em;
+  justify-content: left;
+}
+
+.dropdownDevices{
+  display: block;
+  position: absolute;
+}
+
+.dropdownDevices{
+  width: 10rem;
+  display: block;
+  position: absolute;
+}
+
+.dropdownDevices button{
+  padding: 12px 16px;
+  width: 8rem;
+  text-decoration: none;
+  display: block;
+  font-weight: 400;
+  color: white;
+  background-color: #13131b;
+  border: 0;
+  border-radius: 2px
+}
+
+
+.refresh {
+  color: #eee;
+  display: block;
+  align-items: center;
+}
+
+.progressionBar{
+  display: flex;
+  align-items: center;
+  text-align: right;
+}
+
+.progress{
+  text-align: left;
+  margin-right: 5px;
+  width: 10px;
+  color: #A4EA96;
+}
+
+.duration{
+  text-align: right;
+  margin-left: 5px;
+  color: #A4EA96;
+}
+
+.loggedin{
+    text-decoration-line: underline;
+    padding: 6px
+}
+.loggedin:hover{
+    text-decoration-line: underline;
+    background-color: #13131b;
+    border-radius: 7px;
+}
+
+
+.green{
+  color:green;
+}
+
+.purple{
+  color:purple;
+}
+
+.blue{
+  color:#1DA1F2;
+}
+.grey{
+  color:grey;
+}
+
+.red{
+  color:red;
+}
+
+.white{
+  color:white;
+}
