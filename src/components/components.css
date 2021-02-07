@@ -1,6 +1,4 @@
-span {
-  color: #69EB7C;
-}
+
 
 .userlist-item{
   font-size: 1.5rem;
@@ -105,13 +103,7 @@ a #connections{
 }
 
 .dropdownDevices{
-  display: block;
-  position: absolute;
-}
-
-.dropdownDevices{
   width: 10rem;
-  display: block;
   position: absolute;
 }
 
@@ -185,4 +177,8 @@ a #connections{
 
 .white{
   color:white;
+}
+
+.button-devices{
+  margin: 0;
 }

@@ -20,6 +20,25 @@ export class SPOTAPI {
 
   } // End updateQuestion
 
+  // redirect_uri = process.env.REACT_APP_REDIRECT_URI
+  static getRefreshToken(code){
+    let buffer = new Buffer(process.env.REACT_APP_CLIENT_ID+':'+process.env.REACT_APP_CLIENT_SECRET)
+    let b64client = buffer.toString('base64')
+    return fetch (`https://accounts.spotify.com/api/token`, {
+      method:'POST',
+      headers: {
+        'Authorization': `Basic ${b64client}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: qs.stringify({
+        redirect_uri: process.env.REACT_APP_REDIRECT_PROFILE_URI,
+        code: code,
+        grant_type: 'authorization_code',
+      }),
+    })
+    .then(resp => resp.json())
+  }
+
   static getPlayingStreamer(access_token){
 
     return fetch(`https://api.spotify.com/v1/me/player`, {
@@ -46,8 +65,20 @@ export class SPOTAPI {
     .then( resp => resp.json() );
   }
 
+ static getCurrentTrack(access_token){
+   return fetch(`https://api.spotify.com/v1/me/player/currently-playing`, {
+       method: 'GET',
+       headers: {
+         'Authorization': `Bearer ${access_token}`,
+         'Content-Type': 'application/json',
+       },
+     })
+     .then( (resp) => resp.json())
+     .catch(error => error)
+ }
+ 
   static transferPlayback(id, access_token){
-    var array = []
+    let array = []
     array.push(id)
     return fetch(`https://api.spotify.com/v1/me/player`, {
       method: 'PUT',
@@ -61,7 +92,7 @@ export class SPOTAPI {
   }
 
   static volumePlayback(id, volume, access_token){
-    var array = []
+    let array = []
     array.push(id)
     return fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${volume}&device_id=${id}`, {
       method: 'PUT',
@@ -114,29 +145,18 @@ export class SPOTAPI {
     .then( resp => resp.json() );
   }
 
-  static getCode(){
-    return fetch(`https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&response_type=code&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&scope=streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state`,
-                                              {
-      method:'GET',
+  static getRefreshStreaming(){
+    return fetch(`https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&response_type=code&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&scope=user-read-email user-read-playback-state`,
+      {
+        method:'GET',
     })
   }
 
-  static getRefreshToken(code){
-    let buffer = new Buffer(process.env.REACT_APP_CLIENT_ID+':'+process.env.REACT_APP_CLIENT_SECRET)
-    let b64client = buffer.toString('base64')
-    return fetch (`https://accounts.spotify.com/api/token`, {
-      method:'POST',
-      headers: {
-        'Authorization': `Basic ${b64client}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: qs.stringify({
-        redirect_uri: process.env.REACT_APP_REDIRECT_URI,
-        code: code,
-        grant_type: 'authorization_code',
-      }),
+  static getRefreshListening(){
+    return fetch(`https://accounts.spotify.com/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&response_type=code&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&scope=streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state`,
+      {
+        method:'GET',
     })
-    .then(resp => resp.json())
   }
 
 

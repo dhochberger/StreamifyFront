@@ -30,7 +30,7 @@ function App() {
   })
 
   useEffect( () => {
-    if(!token['streamify-token'] || token['streamify-token'] === 'undefined') {window.location.href='/'; deleteToken('streamify-token');};
+    if(!token['streamify-token'] || token['streamify-token'] === 'undefined') {deleteToken('streamify-token');window.location.href='/'; };
   }, [token] )
 
   const loadUser = userdatas => {
@@ -48,20 +48,28 @@ function App() {
   return (
 
     <div className="App">
+
+      <div className="navbar">
+        <span onClick={() => window.location.href='/streamify'} className="profile-link">Streamify</span>
+        <span onClick={() => window.location.href='/profile'} className="profile-link">Profil</span>
+        <FontAwesomeIcon icon={faSignOutAlt} onClick={logoutUser}/>
+      </div>
+
       <header className="App-header">
         <h1>
-          <FontAwesomeIcon icon={faSpotify} />
-          <span> Streamify </span>
+          <FontAwesomeIcon onClick={() => window.location.href='/streamify'} icon={faSpotify} className="app-title"/>
+          <span onClick={() => window.location.href='/streamify'} className="app-title"> Streamify </span>
         </h1>
-        <FontAwesomeIcon icon={faSignOutAlt} onClick={logoutUser}/>
 
       </header>
       <div className="upcoming">
-        <ul><span>Mises à jours à venir</span>
-          <li>Page profil</li>
-          <li>Création de salons d'écoutes privés ou publiques</li>
-          <li>Meilleure gestion des scopes de l'api Spotify pour mieux protéger les usagers</li>
-        </ul>
+        <ul><span className="update">Mises à jours à venir</span>
+          <li>Page profil complète (qui fonctionne entièrement en fait)</li>
+          <li>Création de "salons" d'écoutes et following de comptes/salons afin de simplifier la recherche d'écoute</li>
+          <li>Simplification de l'activation/désactivation du partage d'écoute(Ca sera probablement un bouton)</li>
+          <li>Une interface plus responsive pour qu'elle ressemble à quelque chose partout</li>
+        </ul><br/>
+        <span className="update">J'le ferais quand j'aurai le temps, mais les cours là c'est chaud</span>
       </div>
 
       <div className="layout">

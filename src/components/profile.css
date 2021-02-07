@@ -1,0 +1,86 @@
+.profile-page{
+  display: inline;
+}
+
+.App-selfid {
+  text-align: center;
+  font-size: 1vmin;
+}
+
+.choice-to-change{
+  background-color: #1D1D1D;
+  border-radius: 7px;
+  margin-right: 5px;
+  text-align: center;
+  height: 100%;
+}
+
+.choice-to-change h2{
+  margin: 0px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.choice-to-change h2:hover{
+  background-color: #2E2E2E;
+}
+
+.selected-choice{
+  position: relative;
+  max-width: 80%;
+}
+
+.h1username{
+  text-align: center;
+  color: #BEBEBE;
+}
+
+.hidden{
+  height: 100%;
+}
+
+select{
+  font-size: 15px;
+  width: 100px;
+  height: 30px;
+}
+
+button{
+  border-style: hidden;
+  border-radius: 5px;
+  background-color: #ACACAC;
+  color: #282c34;
+}
+
+.save-button{
+  position: absolute;
+  margin-bottom: 0px;
+  bottom: 0;
+  right: 0;
+}
+
+
+.selected-choice input{
+  margin: 8px 0;
+  padding: 10px;
+  padding-left: 0px;
+  padding-right: 0px;
+  margin: 8px 0;
+  border-right-width: 0px;
+  bottom-left-width:0px;
+  font-size: 1rem;
+  border-radius: 5px;
+}
+
+button:hover{
+    background-color: #dedede;
+}
+
+button:active {
+  background-color: #cfcfcf;
+  transform: translateY(4px);
+}
+
+.connected{
+  color: #A6E879;
+}

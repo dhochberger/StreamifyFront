@@ -20,11 +20,9 @@ import VolumeUp from '@material-ui/icons/VolumeUp';
 import swal from 'sweetalert';
 import ProgressBar from './progressbar.js';
 
-
-import * as CryptoJS from 'crypto-js';
-import CryptoAES from 'crypto-js/aes'
-
 function UserDatasDetails(props) {
+
+  const spotifyWebApi = new SpotifyWebApi();
 
   let userDatas = props.userdatas;
 
@@ -33,8 +31,6 @@ function UserDatasDetails(props) {
   let oldArtist = '';
   let temp_is_playing = true;
   let interv = 0;
-
-  const spotifyWebApi = new SpotifyWebApi();
 
   //const [token] = useCookies(['streamify-token']);
 
@@ -65,7 +61,7 @@ function UserDatasDetails(props) {
   const [ currentImage, setCurrentImage ] = useState('');
 
   const checkForPlayer = () => {
-    if (window.Spotify !== null && player === '') {
+    if (props.myselfDatas.user !== "" && window.Spotify !== null && player === '') {
       player = new window.Spotify.Player({
         name: "Streamify's Spotify Player",
         getOAuthToken: cb => { cb(props.myselfDatas.access_token); },
@@ -81,16 +77,27 @@ function UserDatasDetails(props) {
 
       refreshingPlayer(false)
 
-      setMyself(props.myselfDatas)
-
-      gettingDevices(props.myselfDatas.access_token)
-
+      if (props.myselfDatas.access_token !== "" && props.myselfDatas.access_token !== undefined){
+        gettingDevices(props.myselfDatas.access_token)
+        setMyself(props.myselfDatas)
+      }
   }, [props.userdatas, props.myselfDatas])
+
+  useEffect( () => {
+    if (props.myselfDatas.access_token === "" || props.myselfDatas.access_token === undefined){
+      swal({
+        title: "ATTENTION : Connexion à Spotify manquante",
+        text: "Vous n'avez pas encore lié votre compte Spotify, allez sur la page Profil, puis Connexion, et connectez votre compte selon votre besoin (Partage ou écoute). N'hésitez pas non plus à aller dans l'onglet Général afin de modifier votre pseudonyme d'affichage et le partage de votre écoute.",
+        icon: "warning",
+        dangerMode: true,
+      })
+    }
+  }, [])
 
   useEffect( () => {
     if (productMe==='open'){
       swal({
-        title: "Compte gratuit",
+        title: "RAPPEL : Compte gratuit",
         text: "Vous êtes connectés avec un compte Spotify gratuit, vous ne pourrez donc pas profiter des fonctionnalités du site.",
         icon: "warning",
         dangerMode: true,
@@ -127,7 +134,9 @@ function UserDatasDetails(props) {
 
       if (currentSong !== stateTrack.item.name) {
 
+        gettingDevices(myselfDatas.access_token)
         await setCurrentSong(stateTrack.item.name);
+
 
         const tempArray = []
         tempArray.push(stateTrack.item.uri)
@@ -157,7 +166,7 @@ function UserDatasDetails(props) {
 
   const gettingDevices = async (access_token) => {
 
-    if (access_token !== undefined ){
+    if (access_token !== "" && access_token !== undefined ){
       if (props.myselfDatas) {
         if (player === '') checkForPlayer()
         if (productMe === ''){
@@ -171,13 +180,16 @@ function UserDatasDetails(props) {
 
         for(var i=0;i<temp.devices.length;i++){
 
-          if(!currentDevice && temp.devices[i].is_active === true)
-          await SPOTAPI.transferPlayback(temp.devices[i].id, props.myselfDatas.access_token);
+          if(!currentDevice && temp.devices[i].is_active === true){
+            await SPOTAPI.transferPlayback(temp.devices[i].id, props.myselfDatas.access_token);
             setCurrentDevice(temp.devices[i].id)
+            break;
+          }
 
-          if(!currentDevice && i===temp.devices.length)
+          if(!currentDevice && i===temp.devices.length){
             await SPOTAPI.transferPlayback(temp.devices[0].id, props.myselfDatas.access_token);
-            setCurrentDevice(temp.devices[i].id)
+            setCurrentDevice(temp.devices[0].id)
+          }
         }
 
       }
@@ -192,17 +204,16 @@ function UserDatasDetails(props) {
     else if (button === 'twitch') isTwitchClicked(!twitchClicked)
     else if (button === 'twitter') isTwitterClicked(!twitterClicked)
 
-    else if (button === 'refresh'){
+    else if (props.myselfDatas.access_token !== undefined && props.myselfDatas.access_token !== "" && props.myselfDatas.user !== "" && button === 'refresh' ){
 
       await SPOTAPI.getDevices(props.myselfDatas.access_token)
 
       await gettingDevices(props.myselfDatas.access_token)
-
-      const decrypt_access = CryptoAES.decrypt(userDatas.access_token, process.env.REACT_APP_ENCRYPTACCESSKEY).toString(CryptoJS.enc.Utf8);
-      spotifyWebApi.setAccessToken(decrypt_access)
+      spotifyWebApi.setAccessToken(props.userdatas.access_token)
 
       const stateTrack = await spotifyWebApi.getMyCurrentPlayingTrack()
       const state = await spotifyWebApi.getMyCurrentPlaybackState()
+
       if (stateTrack) {
         setVolume(state.device.volume_percent)
       }
@@ -272,7 +283,6 @@ function UserDatasDetails(props) {
         clearTimeout(window.interv)
 
         const temp_stateTrack = await spotifyWebApi.getMyCurrentPlayingTrack();
-        gettingDevices(myselfDatas.access_token)
 
         if (temp_stateTrack.currently_playing_type==='ad'){
           setTimeout( () => {
@@ -370,7 +380,7 @@ function UserDatasDetails(props) {
                                           <FontAwesomeIcon id="connections" onClick={e => showMenu()} icon={faLaptopHouse} className='player' />
                                           <div className="dropdownDevices">
                                             { showDevices ? userDeviceId.map( (device, index) => {
-                                                            return( <button onMouseDown={e => setDevice(e.target.id)} id={device.id} key={index}>{device.name}</button>)
+                                                            return( <button className="button-devices" onMouseDown={e => setDevice(e.target.id)} id={device.id} key={index}>{device.name}</button>)
                                                           })
                                                           : null
                                             }

@@ -6,7 +6,7 @@ import { useCookies } from 'react-cookie';
 import * as CryptoJS from 'crypto-js';
 import CryptoAES from 'crypto-js/aes'
 
-function useFetch() {
+function useFetch(props) {
 
   const [users, setUsers] = useState([]);
   const [userDatas, setUserdatas] = useState([]);
@@ -16,14 +16,49 @@ function useFetch() {
   const [token] = useCookies(['streamify-token']);
 
   useEffect( () => {
+
+    async function fetchMyself() {
+      setLoading(true);
+      setError();
+
+      const myid = await API.getMyId(token['streamify-token'])
+                  .catch(err => setError(err))
+      const myself_temp = await API.getMyToken(token['streamify-token'], myid.user)
+                          .catch(err => setError(err))
+
+      var temp_access_token_myself = '';
+      var myself = {};
+      if (myself_temp.status === 400 || myself_temp.get_refresh_token_listening === "undefined"){
+        myself = {user:myid,
+                  access_token:''}
+      }
+      else {
+        var myself_token = CryptoAES.decrypt(myself_temp.get_refresh_token_listening, process.env.REACT_APP_ENCRYPTKEY).toString(CryptoJS.enc.Utf8);
+
+        temp_access_token_myself = await SPOTAPI.getAccessToken(myself_token);
+
+        myself = {user:myself_temp,
+                  access_token:temp_access_token_myself.access_token}
+      }
+      setUsers(null)
+      setUserdatas(null)
+      setMyself(myself)
+      setLoading(false);
+    }
+
     async function fetchData() {
       setLoading(true);
       setError();
 
+      const myid = await API.getMyId(token['streamify-token'])
+                  .catch(err => setError(err))
+
+
+      const myself_temp = await API.getMyToken(token['streamify-token'], myid.user)
+                                .catch(err => setError(err))
+
       const data = await API.getUsers(token['streamify-token'])
                         .catch( err => setError(err))
-      const myself_temp = await API.getMyToken(token['streamify-token'])
-                          .catch(err => setError(err))
 
       const userDatas = []
       var temp_access_token = '';
@@ -32,19 +67,16 @@ function useFetch() {
       var myself = {};
 
       for (var i=0; i<data.length; i++){
-        if ( data[i].get_refresh_token !== ""){
+        if ( data[i].get_refresh_token_streaming !== ""){
 
-          var refresh_token = CryptoAES.decrypt(data[i].get_refresh_token, process.env.REACT_APP_ENCRYPTKEY).toString(CryptoJS.enc.Utf8);
+          var refresh_token = CryptoAES.decrypt(data[i].get_refresh_token_streaming, process.env.REACT_APP_ENCRYPTKEY).toString(CryptoJS.enc.Utf8);
 
           temp_access_token = await SPOTAPI.getAccessToken(refresh_token);
-
-          var crypted_access = CryptoAES.encrypt(temp_access_token.access_token, process.env.REACT_APP_ENCRYPTACCESSKEY).toString();
-
 
           temp_is_playing = await SPOTAPI.getPlayingStreamer(temp_access_token.access_token);
 
           userDatas.push({user:data[i],
-                            access_token:crypted_access,
+                            access_token:temp_access_token.access_token,
                             spotify_api:temp_is_playing });
         }
         else userDatas.push({user:data[i],
@@ -52,15 +84,16 @@ function useFetch() {
                           spotify_api:{'is_playing':false} });
       }
 
-      var myself_token = CryptoAES.decrypt(myself_temp.get_refresh_token, process.env.REACT_APP_ENCRYPTKEY).toString(CryptoJS.enc.Utf8);
-      var decrypt = 'U2FsdGVkX19xeBgzFJWOM4ahHNQFOcAU5IOH/CvnvEwFX086z666vVrIiDYBKE8pJ0IY4uZ5DQOQ9+E+7WiKxTvOMwzne2CiRU+gSYH0r+7DWfxPDBDHUsZTIAB7lYuVBNRgktmv5zAbgGALUge5tSjOdyP8LBG50cmwEGPhym3qZMXv4/ipAg6l4g6kLIbG1H29DIglqNaieZHif09ybw=='
-      var temp_d = CryptoAES.decrypt(decrypt, process.env.REACT_APP_ENCRYPTKEY).toString(CryptoJS.enc.Utf8)
+      if(myself_temp.status === 400)       myself = {user:myid,
+                                                                    access_token:''}
+      else {
+            var myself_token = CryptoAES.decrypt(myself_temp.get_refresh_token_listening, process.env.REACT_APP_ENCRYPTKEY).toString(CryptoJS.enc.Utf8);
 
+            temp_access_token_myself = await SPOTAPI.getAccessToken(myself_token);
 
-      temp_access_token_myself = await SPOTAPI.getAccessToken(myself_token);
-
-      myself = {user:myself_temp,
-                access_token:temp_access_token_myself.access_token}
+            myself = {user:myself_temp,
+                      access_token:temp_access_token_myself.access_token}
+      }
 
 
       setUsers(data)
@@ -71,15 +104,21 @@ function useFetch() {
     }
 
     function timer() {
-      fetchData();
-      setTimeout( () => {
-          timer();
-        }, 3500000)
+      if (window.location.pathname === "/profile"){
+        fetchMyself();
+      }
+      else {
+        fetchData();
+        setTimeout( () => {
+            timer();
+          }, 3500000)
+      }
     }
 
     timer();
 
   }, [token]);
+
   return [users, userDatas, myself, loading, error];
 }
 

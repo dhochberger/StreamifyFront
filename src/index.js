@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import Auth from './components/auth';
+import Profile from './components/profile'
 import * as serviceWorker from './serviceWorker';
 import { Route, BrowserRouter } from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie'
@@ -16,6 +17,7 @@ function Router(){
         <BrowserRouter>
             <Route exact path="/" component={Auth} />
             <Route exact path="/streamify" component={App} />
+            <Route exact path="/profile" component={Profile} />
         </BrowserRouter>
       </CookiesProvider>
     </React.StrictMode>
